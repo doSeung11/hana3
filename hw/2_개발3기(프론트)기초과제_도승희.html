@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문제 2번</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #777575;
+        }
+        td {
+            padding: 10px;
+            text-align: right;
+            border: 1px solid #777575;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            const record = {
+                "base_time":20,
+                "list":
+                [
+                    {"id":1, "username":"홍길동", "work_time":40, "per_pay":10000},
+                    {"id":2, "username":"송민헌", "work_time":20, "per_pay":20000},
+                    {"id":3, "username":"장길산", "work_time":30, "per_pay":30000},
+                    {"id":4, "username":"임꺽정", "work_time":10, "per_pay":40000},
+                    {"id":5, "username":"강민구", "work_time":30, "per_pay":10000},
+                ]
+            }
+            const baseTime = record.base_time;
+
+            const tableBody = document.querySelector('#recordTable tbody');
+            const totalPaymentCell = document.querySelector('#totalPayment');
+            let totalPayment = 0; //총지불액
+
+            record.list.forEach((em) => {
+                const row = document.createElement('tr');
+
+                Object.values(em).forEach((val, idx) => {
+                    const infoCell = document.createElement('td');
+                    infoCell.textContent = idx===3 ? formatNumber(val) : val;  
+                    row.appendChild(infoCell); //번호, 이름, 근무시간, 시간당급여액
+                })
+
+                const workTime = em.work_time;
+                const perPay = em.per_pay;
+                const basePay = workTime*perPay; //기본액
+                const overPay = workTime>baseTime ? (workTime-baseTime)*(perPay/2) : 0;  //초과수당
+                const totalPay = basePay+overPay; //합계
+                const tax = 0.033*totalPay; //세액
+                const realPay = totalPay-tax; //실지불액
+                totalPayment += realPay; //총지불액 갱신
+                const payArr = [basePay, overPay, totalPay, tax, realPay];
+                payArr.forEach((pay) => {
+                    const payCell = document.createElement('td');
+                    payCell.textContent = formatNumber(pay);
+                    row.appendChild(payCell);
+                })  
+                tableBody.appendChild(row);
+            });
+            totalPaymentCell.textContent = formatNumber(totalPayment);
+        };
+
+        function formatNumber(number) {return new Intl.NumberFormat().format(number);}
+    </script>
+</head>
+
+<body>
+    <table id="recordTable">
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>이름</th>
+            <th>근무시간</th>
+            <th>시간당급여액</th>
+            <th>기본액</th>
+            <th>초과수당</th>
+            <th>합계</th>
+            <th>세액</th>
+            <th>실지불액</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 근무 정보 -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="8">총지불액</th>
+                <th id="totalPayment">0</th>
+            </tr>
+        </tfoot>
+      </table>
+</body>
+</html>
