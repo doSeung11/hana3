@@ -10,7 +10,6 @@ import { useCounter } from '../contexts/counter-context';
 import { useSession } from '../contexts/session-context';
 import { useTimeout } from '../hooks/timeout';
 import { useToggle } from '../hooks/toggle';
-import { useNavigate } from 'react-router-dom';
 
 export type LoginHandler = {
   noti: (msg: string) => void;
@@ -62,7 +61,6 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
   useEffect(() => {
     // console.log('Please login...');
     plusCount();
-    idRef.current?.focus();
 
     return () => {
       // console.log('logined!');
@@ -70,30 +68,22 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
     };
   }, [plusCount, minusCount]);
 
+  // useEffect(() => {
+  //   const tmout = setTimeout(() => console.log('X=', count), 1000);
+
+  //   return () => clearTimeout(tmout);
+  // }, [count]);
+
+  useTimeout(() => console.log('X=', count), 1000);
+
   // const [isShow, setShow] = useState(false);
   const [isShow, toggle] = useToggle();
 
-  // const f = useCallback(() => console.log('isShow=', isShow), [isShow]);
-  // const { reset, clear } = useTimeout(f, 1000, [isShow]);
-
-  const { reset, clear } = useTimeout(
-    () => console.log('isShow=', isShow),
-    isShow ? 1000 : 2000,
-    [isShow]
-  );
-
-  const navigate = useNavigate();
-  const navigateToMy = () => {
-    navigate('/My');
-  };
-
   return (
     <>
-      <button onClick={reset}>Reset</button>
-      <button onClick={clear}>Clear</button>
       <button
         onClick={toggle}
-        style={{ border: `2px solid ${isShow ? 'blue' : 'yellow'}` }}
+        style={{ border: `1px solid ${isShow ? 'blue' : 'yellow'}` }}
       >
         {isShow ? 'HIDE' : 'SHOW'}
       </button>
@@ -107,9 +97,7 @@ export const Login = forwardRef((_, ref: ForwardedRef<LoginHandler>) => {
           {/* <input type='text' onChange={(e) => setName(e.currentTarget.value)} /> */}
           <input type='text' ref={nameRef} />
         </div>
-        <button onClick={navigateToMy} type='submit'>
-          Sign-in
-        </button>
+        <button type='submit'>Sign-in</button>
       </form>
     </>
   );

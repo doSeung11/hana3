@@ -6,10 +6,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Cart } from '../type.d';
 import { Login, LoginHandler } from './Login';
 import { Profile } from './Profile';
 import { useSession } from '../contexts/session-context';
+import { Cart } from '../contexts/session';
 
 export type ItemHandler = {
   signOut: () => void;
@@ -18,13 +18,7 @@ export type ItemHandler = {
   loginHandler: Partial<LoginHandler>;
 };
 
-// type Props = {
-//   session: Session;
-//   login: (id: number, name: string) => void;
-//   logout: () => void;
-//   removeItem: (itemId: number) => void;
-//   saveItem: (item: Cart) => void;
-// };
+// type Props = {};
 
 const My = forwardRef((_, ref: ForwardedRef<ItemHandler>) => {
   // const itemIdRef = useRef(0);
@@ -35,6 +29,7 @@ const My = forwardRef((_, ref: ForwardedRef<ItemHandler>) => {
     session: { loginUser, cart },
     removeItem,
     saveItem,
+    totalPrice,
   } = useSession();
 
   const itemNameRef = useRef<HTMLInputElement>(null);
@@ -83,6 +78,7 @@ const My = forwardRef((_, ref: ForwardedRef<ItemHandler>) => {
     itemNameRef.current.value = '';
     if (itemPriceRef.current) itemPriceRef.current.value = '0';
   };
+
   return (
     <div
       style={{
@@ -120,15 +116,31 @@ const My = forwardRef((_, ref: ForwardedRef<ItemHandler>) => {
           >
             <small>{id}.</small>
             {name} ({price.toLocaleString()}원)
-            <button onClick={() => removeItem(id)}>X</button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeItem(id);
+              }}
+              className='ml-3'
+            >
+              X
+            </button>
           </li>
         ))}
       </ul>
+      <div className='font-bold text-red-500'>
+        총 {totalPrice.toLocaleString()}원
+      </div>
+
       <form onSubmit={saveCartItem} onReset={() => setCurrId(0)}>
         <input type='text' ref={itemNameRef} placeholder='상품명...' />
         <input type='number' ref={itemPriceRef} placeholder='금액...' />
-        <button type='reset'>취소</button>
-        <button type='submit'>{currId ? '수정' : '추가'}</button>
+        <button type='reset' className='mx-3'>
+          취소
+        </button>
+        <button type='submit' className='btn-primary'>
+          {currId ? '수정' : '추가'}
+        </button>
       </form>
     </div>
   );
